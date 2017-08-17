@@ -11,7 +11,9 @@ namespace DTViewManager {
 	public class ViewManager : MonoBehaviour {
 		// PRAGMA MARK - Public Interface
 		public void AttachView(GameObject view) {
-			view.transform.SetParent(this.transform, worldPositionStays: false);
+			if (view.transform.parent != this.transform) {
+				view.transform.SetParent(this.transform, worldPositionStays: false);
+			}
 
 			// if the application is not playing, we don't need to manage the view order
 			if (!Application.isPlaying) {

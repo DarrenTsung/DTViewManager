@@ -21,7 +21,7 @@ namespace DTObjectPoolManager {
 		public static GameObject CreateView(string prefabName, bool worldPositionStays = false, ViewManager viewManager = null) {
 			viewManager = viewManager ?? ViewManagerLocator.Main;
 
-			GameObject viewObject = ObjectPoolManager.Create(prefabName, null, worldPositionStays);
+			GameObject viewObject = ObjectPoolManager.Create(prefabName, viewManager.gameObject, worldPositionStays);
 			viewManager.AttachView(viewObject);
 			return viewObject;
 		}
@@ -34,7 +34,7 @@ namespace DTObjectPoolManager {
 		public static GameObject CreateView(GameObject prefab, bool worldPositionStays = false, ViewManager viewManager = null) {
 			viewManager = viewManager ?? ViewManagerLocator.Main;
 
-			GameObject viewObject = ObjectPoolManager.Create(prefab, null, worldPositionStays);
+			GameObject viewObject = ObjectPoolManager.Create(prefab, viewManager.gameObject, worldPositionStays);
 			viewManager.AttachView(viewObject);
 			return viewObject;
 		}
