@@ -20,16 +20,21 @@ namespace DTViewManager {
 				return;
 			}
 
-			RecyclablePrefab r = view.GetRequiredComponent<RecyclablePrefab>();
-			int priority = priorityMap_.PriorityForPrefabName(r.PrefabName);
-			cachedPriorities_[view.transform] = priority;
+			int priority;
+			// NOTE (darren): Normally the view.transform will not be cached at this
+			// point, but it can happen in edge cases (like CreateView() calling CreateView() in recycle setup)
+			if (!cachedPriorities_.ContainsKey(view.transform)) {
+				priority = GetPriority(view);
+				cachedPriorities_[view.transform] = priority;
+			} else {
+				priority = cachedPriorities_[view.transform];
+			}
 
 			for (int i = 0; i < this.transform.childCount; i++) {
 				Transform child = this.transform.GetChild(i);
 
 				if (!cachedPriorities_.ContainsKey(child)) {
-					Debug.LogWarning(string.Format("Child ({0}) is not in cached priorties, didn't go through ViewManager flow?", child.gameObject.name));
-					cachedPriorities_[child] = priorityMap_.DefaultPriority;
+					cachedPriorities_[child] = GetPriority(child.gameObject);
 					continue;
 				}
 
@@ -74,6 +79,16 @@ namespace DTViewManager {
 			foreach (Transform child in this.transform) {
 				cachedPriorities_[child] = defaultPriority_;
 			}
+		}
+
+		private int GetPriority(GameObject view) {
+			RecyclablePrefab r = view.GetRequiredComponent<RecyclablePrefab>();
+			if (r == null) {
+				Debug.LogWarning("Assigning default priority for gameObject: " + view + " because no RecycablePrefab exists!");
+				return defaultPriority_;
+			}
+
+			return priorityMap_.PriorityForPrefabName(r.PrefabName);
 		}
 	}
 
